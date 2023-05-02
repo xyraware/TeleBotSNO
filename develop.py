@@ -193,7 +193,7 @@ def send_with_photo(message):
         })
 
         # Отправить подтверждение
-        bot_telegram.send_message(message.chat.id, 'Фото и текст успешно отправлены в канал.')
+        bot_telegram.send_message(message.chat.id, 'Фото и текст успешно отправлены в каналы.')
 
         # Удалить временный файл
         os.remove(temp_file_path)
