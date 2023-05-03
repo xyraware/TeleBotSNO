@@ -210,7 +210,7 @@ def main():
     """
     Запускает бота Telegram и начинает его работу
     """
-    print('Telegram is running')
+    print('Algorithm is running')
     bot_telegram.polling()
 
 
