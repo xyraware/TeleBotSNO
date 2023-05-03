@@ -1,4 +1,3 @@
-
 import requests
 import settings
 import telebot
@@ -19,7 +18,7 @@ actions = ['Отправить текст и фото', 'Отправить то
 
 posting_mode = False
 
-
+# Обработчик команды /start
 @bot_telegram.message_handler(commands=['start'])
 def start_handler(message):
     """
@@ -109,18 +108,20 @@ def send_text_only(message):
     """
     # Отправить текст в канал
     bot_telegram.send_message(BOT_NAME, message.text)
+
     webhook = discord_webhook.DiscordWebhook(
         url=settings.discord_webhook_settings['url'],
         content=f'{message.text}')
     response = webhook.execute()
-    # Отправить подтверждение
-    bot_telegram.send_message(message.chat.id, 'Текст успешно отправлен в канал.')
 
     vk_session.method('wall.post', {
         'owner_id': -int(settings.vk_settings['group_id']),
         'from_group': 1,
         'message': message.text
     })
+
+    # Отправить подтверждение
+    bot_telegram.send_message(message.chat.id, 'Текст успешно отправлен в канал.')
 
     # Выход из режима постинга
     global posting_mode
@@ -151,10 +152,10 @@ def send_with_photo(message):
 
         # Отправить фото в канал из временной папки
         with open(temp_file_path, 'rb') as f:
-            bot_telegram.send_photo(BOT_NAME, f)
+            bot_telegram.send_photo(BOT_NAME, f, caption=bot_telegram.waiting_text)
 
-            # Отправить текст вместе с фото
-        bot_telegram.send_message(BOT_NAME, bot_telegram.waiting_text)
+        # Отправить текст вместе с фото
+       # bot_telegram.send_message(BOT_NAME, bot_telegram.waiting_text)
 
         if settings.discord_webhook_settings['url']:
             payload = {
