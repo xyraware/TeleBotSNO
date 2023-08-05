@@ -1,10 +1,11 @@
-import requests
-import settings
+import os
 import telebot
 from telebot import types
-import os
 import discord_webhook
 import vk_api
+import requests
+import settings
+
 
 TOKEN = settings.telegram_settings['token']
 BOT_NAME = settings.telegram_settings['bot_name']
@@ -17,6 +18,7 @@ vk_session = vk_api.VkApi(token=VK_ACCESS_TOKEN)
 actions = ['Отправить текст и фото', 'Отправить только текст', 'Отмена']
 
 posting_mode = False
+
 
 # Обработчик команды /start
 @bot_telegram.message_handler(commands=['start'])
@@ -51,12 +53,6 @@ def post_handler(message):
     bot_telegram.send_message(message.chat.id, 'Выберите действие:', reply_markup=keyboard)
 
 
-# Обработчик текстовых сообщений в режиме постинга
-@bot_telegram.message_handler(
-    func=lambda message: posting_mode and message.text not in ['/post', 'Отправить текст и фото',
-                                                               'Отправить только текст',
-                                                               'Отмена', 'False'])
-# Обработчик нажатия на кнопки в режиме постинга
 @bot_telegram.message_handler(func=lambda message: message.text in actions)
 def action_handler(message):
     """
@@ -147,15 +143,12 @@ def send_with_photo(message):
 
         # Сохранить фото во временную папку
         temp_file_path = f'temp{file_extension}'
-        with open(temp_file_path, 'wb') as f:
-            f.write(downloaded_file)
+        with open(temp_file_path, 'wb') as file:
+            file.write(downloaded_file)
 
         # Отправить фото в канал из временной папки
-        with open(temp_file_path, 'rb') as f:
-            bot_telegram.send_photo(BOT_NAME, f, caption=bot_telegram.waiting_text)
-
-        # Отправить текст вместе с фото
-       # bot_telegram.send_message(BOT_NAME, bot_telegram.waiting_text)
+        with open(temp_file_path, 'rb') as file:
+            bot_telegram.send_photo(BOT_NAME, file, caption=bot_telegram.waiting_text)
 
         if settings.discord_webhook_settings['url']:
             payload = {
